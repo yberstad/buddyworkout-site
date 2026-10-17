@@ -1,0 +1,12 @@
+{
+  "name": "buddyworkout-site",
+  "private": true,
+  "type": "module",
+  "description": "Static website for BuddyWorkout: privacy policy and support, in English and Norwegian.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node build.mjs",
+    "build:production": "node build.mjs --production",
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}
