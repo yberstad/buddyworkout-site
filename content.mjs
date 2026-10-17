@@ -78,9 +78,9 @@ ${links}
 
 <h2>Who is responsible</h2>
 <dl class="facts">
-  <dt>Company</dt><dd>${owner.name}</dd>
-  <dt>Org. no.</dt><dd>${owner.orgNumber}</dd>
-  <dt>Address</dt><dd>${owner.address}</dd>
+  <dt>Name</dt><dd>${owner.name}</dd>
+  ${owner.orgNumber ? `<dt>Org. no.</dt><dd>${owner.orgNumber}</dd>` : ''}
+  ${owner.address ? `<dt>Address</dt><dd>${owner.address}</dd>` : ''}
   <dt>E-mail</dt><dd><a href="mailto:${owner.email}">${owner.email}</a></dd>
 </dl>
 
@@ -169,9 +169,9 @@ ${links}
 
 <h2>Behandlingsansvarlig</h2>
 <dl class="facts">
-  <dt>Selskap</dt><dd>${owner.name}</dd>
-  <dt>Org.nr.</dt><dd>${owner.orgNumber}</dd>
-  <dt>Adresse</dt><dd>${owner.address}</dd>
+  <dt>Navn</dt><dd>${owner.name}</dd>
+  ${owner.orgNumber ? `<dt>Org.nr.</dt><dd>${owner.orgNumber}</dd>` : ''}
+  ${owner.address ? `<dt>Adresse</dt><dd>${owner.address}</dd>` : ''}
   <dt>E-post</dt><dd><a href="mailto:${owner.email}">${owner.email}</a></dd>
 </dl>
 
