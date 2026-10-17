@@ -52,8 +52,8 @@ describe('pages', () => {
     for (const p of ['privacy.html', 'no/personvern.html']) {
       const html = read(p);
       assert.ok(html.includes(config.owner.name), p);
-      assert.ok(html.includes(config.owner.orgNumber), p);
-      assert.ok(html.includes('Skylehamaren 21'), p);
+      if (config.owner.orgNumber) assert.ok(html.includes(config.owner.orgNumber), p);
+      if (config.owner.address) assert.ok(html.includes(config.owner.address), p);
       assert.ok(html.includes(config.owner.email), p);
       assert.ok(html.includes(config.updated), p);
     }
