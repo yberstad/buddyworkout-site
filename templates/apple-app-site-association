@@ -1,7 +1,0 @@
-{
-  "applinks": {
-    "details": [
-      { "appIDs": ["TODO_TEAMID.no.sharpnet.buddyworkout"], "components": [{ "/": "/s/*" }] }
-    ]
-  }
-}

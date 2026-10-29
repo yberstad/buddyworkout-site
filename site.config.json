@@ -1,5 +1,5 @@
 {
-  "siteUrl": "https://yberstad.github.io/buddyworkout-site",
+  "siteUrl": "https://buddyworkout.com",
   "appName": "BuddyWorkout",
   "owner": {
     "name": "Øyvind Habberstad",
@@ -11,5 +11,12 @@
   "storeLinks": {
     "appStore": "",
     "googlePlay": ""
+  },
+  "app": {
+    "appleAppIds": [
+      "RLU3WX3898.no.sharpnet.buddyworkout"
+    ],
+    "androidPackage": "no.sharpnet.buddyworkout",
+    "androidCertFingerprints": []
   }
 }

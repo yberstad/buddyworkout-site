@@ -4,7 +4,7 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { files, pages, storeText, ui } from './content.mjs';
+import { files, pages, sharePage, storeText, ui } from './content.mjs';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const langs = ['en', 'nb'];
@@ -13,12 +13,81 @@ const dirOf = (lang) => (lang === 'en' ? '' : 'no/');
 
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
-/** Path of a page from the site root, e.g. `no/personvern.html`. */
+/** File of a page from the site root, e.g. `no/personvern.html`. */
 const pathOf = (lang, slug) => dirOf(lang) + files[lang][slug];
 
-/** Public URL of a page. The home pages use the folder URL. */
+/** Page name in URLs: no `.html` (the host redirects `.html` to it), and '' for the home page. */
+const nameOf = (lang, slug) => (slug === 'home' ? '' : files[lang][slug].replace(/\.html$/, ''));
+
+/** Public URL of a page, e.g. `https://buddyworkout.com/no/personvern`. */
 function urlOf(siteUrl, lang, slug) {
-  return slug === 'home' ? `${siteUrl}/${dirOf(lang)}` : `${siteUrl}/${pathOf(lang, slug)}`;
+  return `${siteUrl}/${dirOf(lang)}${nameOf(lang, slug)}`;
+}
+
+const fingerprintPattern = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
+
+/** iOS universal links: share links under /s open the app. */
+export function appleAppSiteAssociation(app) {
+  return {
+    applinks: {
+      details: [{ appIDs: app.appleAppIds, components: [{ '/': '/s' }, { '/': '/s/*' }] }],
+    },
+  };
+}
+
+/** Android app links. Each fingerprint is the SHA-256 of a signing certificate, e.g. Play's app signing key. */
+export function assetLinks(app) {
+  for (const f of app.androidCertFingerprints) {
+    if (!fingerprintPattern.test(f)) throw new Error(`Not a SHA-256 certificate fingerprint (AA:BB:… upper case): ${f}`);
+  }
+  return [
+    {
+      relation: ['delegate_permission/common.handle_all_urls'],
+      target: {
+        namespace: 'android_app',
+        package_name: app.androidPackage,
+        sha256_cert_fingerprints: app.androidCertFingerprints,
+      },
+    },
+  ];
+}
+
+function badgesOf(config, lang) {
+  const badges = [
+    config.storeLinks.appStore && `<a class="button" href="${escapeHtml(config.storeLinks.appStore)}">${storeText[lang].appStore}</a>`,
+    config.storeLinks.googlePlay && `<a class="button" href="${escapeHtml(config.storeLinks.googlePlay)}">${storeText[lang].googlePlay}</a>`,
+  ].filter(Boolean);
+  return badges.length ? `  <div class="badges">${badges.join('')}</div>` : '';
+}
+
+/** Fallback for share links (/s and /s/…) on a device without the app. Paths are root-absolute: it is served under /s/. */
+function renderSharePage(config) {
+  const { en, nb } = sharePage;
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(en.title)}</title>
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main id="content"><div class="wrap">
+<h1>${en.heading}</h1>
+<p>${en.text}</p>
+<section lang="nb">
+<h2>${nb.heading}</h2>
+<p>${nb.text}</p>
+</section>
+${badgesOf(config, 'en')}
+<p><a href="/">${config.appName}</a></p>
+</div></main>
+</body>
+</html>
+`;
 }
 
 export function loadConfig() {
@@ -33,15 +102,10 @@ function renderPage(config, lang, slug) {
   const up = lang === 'en' ? '' : '../';
   const page = pages[lang][slug];
 
-  // Links relative to the current folder, so the site works under any base path.
-  const href = (toSlug) => files[lang][toSlug];
-  const switchTarget = lang === 'en' ? `no/${files.nb[slug]}` : `../${files.en[slug]}`;
-
-  const badges = [
-    config.storeLinks.appStore && `<a class="button" href="${escapeHtml(config.storeLinks.appStore)}">${storeText[lang].appStore}</a>`,
-    config.storeLinks.googlePlay && `<a class="button" href="${escapeHtml(config.storeLinks.googlePlay)}">${storeText[lang].googlePlay}</a>`,
-  ].filter(Boolean);
-  const links = badges.length ? `  <div class="badges">${badges.join('')}</div>` : '';
+  // Links relative to the current folder, without `.html`, so the site works under any base path.
+  const href = (toSlug) => nameOf(lang, toSlug) || './';
+  const switchTarget = (lang === 'en' ? 'no/' : '../') + nameOf(other, slug);
+  const links = badgesOf(config, lang);
 
   const body = page.body({ owner: config.owner, updated: config.updated, links });
   const alt = (l) => `<link rel="alternate" hreflang="${ui[l].htmlLang}" href="${urlOf(config.siteUrl, l, slug)}">`;
@@ -94,7 +158,6 @@ export function build({ production = false } = {}) {
   cpSync(join(root, 'src', 'style.css'), join(dist, 'style.css'));
   cpSync(join(root, 'src', 'fonts'), join(dist, 'fonts'), { recursive: true });
   cpSync(join(root, 'src', 'favicon.png'), join(dist, 'favicon.png'));
-  writeFileSync(join(dist, '.nojekyll'), '');
 
   const urls = [];
   for (const lang of langs) {
@@ -113,7 +176,24 @@ export function build({ production = false } = {}) {
   writeFileSync(join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${config.siteUrl}/sitemap.xml\n`);
   writeFileSync(
     join(dist, '404.html'),
-    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found</title><meta name="robots" content="noindex"><link rel="stylesheet" href="style.css"></head><body><main><div class="wrap"><h1>Page not found</h1><p><a href="./">BuddyWorkout</a></p></div></main></body></html>\n`,
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page not found</title><meta name="robots" content="noindex"><link rel="stylesheet" href="/style.css"></head><body><main><div class="wrap"><h1>Page not found</h1><p><a href="/">BuddyWorkout</a></p></div></main></body></html>\n`,
+  );
+
+  // Share link fallback, and the files that let the app open https://<site>/s links (universal links, app links).
+  writeFileSync(join(dist, 's.html'), renderSharePage(config));
+  writeFileSync(join(dist, '_redirects'), '/s/* /s 200\n');
+  mkdirSync(join(dist, '.well-known'));
+  writeFileSync(
+    join(dist, '.well-known', 'apple-app-site-association'),
+    `${JSON.stringify(appleAppSiteAssociation(config.app), null, 2)}\n`,
+  );
+  // Without a fingerprint the file would verify nothing, so it is left out until one is configured.
+  if (config.app.androidCertFingerprints.length) {
+    writeFileSync(join(dist, '.well-known', 'assetlinks.json'), `${JSON.stringify(assetLinks(config.app), null, 2)}\n`);
+  }
+  writeFileSync(
+    join(dist, '_headers'),
+    '/.well-known/apple-app-site-association\n  Content-Type: application/json\n',
   );
 
   if (production) {

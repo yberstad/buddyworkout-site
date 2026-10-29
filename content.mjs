@@ -42,9 +42,9 @@ ${links}
 <div class="cards">
   <div class="card"><h3>A timer you can trust</h3><p>Time is kept by the clock, so it stays correct when the screen locks or the app is in the background. Sound and haptic cues mark each phase.</p></div>
   <div class="card"><h3>Share by link</h3><p>Send an exercise or a whole session by SMS, e-mail or any messaging app. The friend opens the link in the app and chooses what to keep.</p></div>
-  <div class="card"><h3>Private by design</h3><p>Exercises, history and contacts stay on your phone. There is no server and no account. <a href="privacy.html">Read the privacy policy</a>.</p></div>
+  <div class="card"><h3>Private by design</h3><p>Exercises, history and contacts stay on your phone. There is no server and no account. <a href="privacy">Read the privacy policy</a>.</p></div>
 </div>
-<p>Questions or feedback? See <a href="support.html">Support</a> or write to <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
+<p>Questions or feedback? See <a href="support">Support</a> or write to <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
     },
     support: {
       title: 'Support: BuddyWorkout',
@@ -66,7 +66,7 @@ ${links}
 <details><summary>Do I need to create an account?</summary>
 <p>No. There are no accounts. Everything is stored on your phone.</p></details>
 <details><summary>How do I delete all my data?</summary>
-<p>Uninstall the app. Everything it stored goes with it. See the <a href="privacy.html">privacy policy</a> for details.</p></details>`,
+<p>Uninstall the app. Everything it stored goes with it. See the <a href="privacy">privacy policy</a> for details.</p></details>`,
     },
     privacy: {
       title: 'Privacy policy: BuddyWorkout',
@@ -133,9 +133,9 @@ ${links}
 <div class="cards">
   <div class="card"><h3>En timer du kan stole på</h3><p>Tiden regnes ut fra klokka, så den holder riktig selv om skjermen låses eller appen er i bakgrunnen. Lyd og haptikk markerer hver fase.</p></div>
   <div class="card"><h3>Del med lenke</h3><p>Send en øvelse eller en hel økt på SMS, e-post eller i en meldingsapp. Vennen åpner lenken i appen og velger hva som skal lagres.</p></div>
-  <div class="card"><h3>Personvern fra grunnen</h3><p>Øvelser, historikk og kontakter blir på telefonen din. Ingen server og ingen konto. <a href="personvern.html">Les personvernerklæringen</a>.</p></div>
+  <div class="card"><h3>Personvern fra grunnen</h3><p>Øvelser, historikk og kontakter blir på telefonen din. Ingen server og ingen konto. <a href="personvern">Les personvernerklæringen</a>.</p></div>
 </div>
-<p>Spørsmål eller tilbakemelding? Se <a href="support.html">Support</a> eller skriv til <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
+<p>Spørsmål eller tilbakemelding? Se <a href="support">Support</a> eller skriv til <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
     },
     support: {
       title: 'Support: BuddyWorkout',
@@ -157,7 +157,7 @@ ${links}
 <details><summary>Må jeg opprette en konto?</summary>
 <p>Nei. Det finnes ingen kontoer. Alt lagres på telefonen din.</p></details>
 <details><summary>Hvordan sletter jeg alle dataene mine?</summary>
-<p>Avinstaller appen. Alt den har lagret forsvinner sammen med den. Se <a href="personvern.html">personvernerklæringen</a> for detaljer.</p></details>`,
+<p>Avinstaller appen. Alt den har lagret forsvinner sammen med den. Se <a href="personvern">personvernerklæringen</a> for detaljer.</p></details>`,
     },
     privacy: {
       title: 'Personvernerklæring: BuddyWorkout',
@@ -208,6 +208,20 @@ ${links}
 <h2>Kontakt</h2>
 <p>Spørsmål om personvern: <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
     },
+  },
+};
+
+// The /s fallback page, shown when a shared link is opened on a device without the app.
+// One page holds both languages, because the link does not say which language the reader uses.
+export const sharePage = {
+  en: {
+    title: 'Open in BuddyWorkout',
+    heading: 'Someone shared a workout with you',
+    text: 'Open this link on a phone with BuddyWorkout installed. If you do not have the app yet, install it and then open the link again.',
+  },
+  nb: {
+    heading: 'Noen har delt en treningsøkt med deg',
+    text: 'Åpne lenken på en telefon med BuddyWorkout installert. Har du ikke appen ennå, installer den og åpne lenken på nytt.',
   },
 };
 
