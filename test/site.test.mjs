@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, normalize } from 'node:path';
 import { before, describe, it } from 'node:test';
-import { build, findPlaceholders } from '../build.mjs';
+import { appleAppSiteAssociation, assetLinks, build, findPlaceholders } from '../build.mjs';
 
 let dist;
 let config;
@@ -42,9 +42,11 @@ describe('pages', () => {
   });
 
   it('uses the configured site URL in canonical links, sitemap and robots', () => {
-    assert.match(read('privacy.html'), /rel="canonical" href="https:\/\/example\.test\/base\/privacy\.html"/);
-    assert.match(read('no/personvern.html'), /rel="canonical" href="https:\/\/example\.test\/base\/no\/personvern\.html"/);
-    assert.match(read('sitemap.xml'), /<loc>https:\/\/example\.test\/base\/no\/support\.html<\/loc>/);
+    assert.match(read('privacy.html'), /rel="canonical" href="https:\/\/example\.test\/base\/privacy"/);
+    assert.match(read('no/personvern.html'), /rel="canonical" href="https:\/\/example\.test\/base\/no\/personvern"/);
+    assert.match(read('no/index.html'), /rel="canonical" href="https:\/\/example\.test\/base\/no\/"/);
+    assert.match(read('sitemap.xml'), /<loc>https:\/\/example\.test\/base\/no\/support<\/loc>/);
+    assert.ok(!/\.html/.test(read('sitemap.xml')), 'sitemap has .html URLs');
     assert.match(read('robots.txt'), /Sitemap: https:\/\/example\.test\/base\/sitemap\.xml/);
   });
 
@@ -74,9 +76,11 @@ describe('links and requests', () => {
         (u) => !/^(https?:|mailto:)/.test(u) && !u.startsWith('#'),
       );
       for (const u of targets) {
+        assert.ok(!/\.html(#|$)/.test(u), `${p} links to ${u}: page links have no .html`);
         const file = normalize(join(dirname(join(dist, p)), u.split('#')[0] || '.'));
-        const target = existsSync(file) && !file.endsWith('/') && readdirSafe(file) === null ? file : join(file, 'index.html');
-        assert.ok(existsSync(target), `${p} links to missing ${u}`);
+        // The host serves `x.html` at `x` and `x/index.html` at `x/`.
+        const target = [file, `${file}.html`, join(file, 'index.html')].find((f) => existsSync(f) && readdirSafe(f) === null);
+        assert.ok(target, `${p} links to missing ${u}`);
       }
       for (const u of attrs(html, 'href').filter((x) => x.startsWith('#'))) {
         assert.ok(html.includes(`id="${u.slice(1)}"`), `${p} has no ${u}`);
@@ -96,9 +100,10 @@ describe('links and requests', () => {
   });
 
   it('switches language between the matching pages', () => {
-    assert.match(read('privacy.html'), /href="no\/personvern\.html" lang="nb"/);
-    assert.match(read('no/personvern.html'), /href="\.\.\/privacy\.html" lang="en"/);
-    assert.match(read('no/index.html'), /href="\.\.\/index\.html" lang="en"/);
+    assert.match(read('privacy.html'), /href="no\/personvern" lang="nb"/);
+    assert.match(read('no/personvern.html'), /href="\.\.\/privacy" lang="en"/);
+    assert.match(read('no/index.html'), /href="\.\.\/" lang="en"/);
+    assert.match(read('index.html'), /href="no\/" lang="nb"/);
   });
 
   it('sets aria-current on the active nav link and has a skip link and one h1', () => {
@@ -108,6 +113,56 @@ describe('links and requests', () => {
       assert.match(html, /class="skip" href="#content"/, p);
       assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, p);
     }
+  });
+});
+
+describe('share links', () => {
+  const app = {
+    appleAppIds: ['ABCDE12345.no.example.app'],
+    androidPackage: 'no.example.app',
+    androidCertFingerprints: [],
+  };
+  const fingerprint = Array.from({ length: 32 }, (_, i) => (i * 7).toString(16).padStart(2, '0').toUpperCase()).join(':');
+
+  it('publishes apple-app-site-association for /s links, served as JSON', () => {
+    const aasa = JSON.parse(read('.well-known/apple-app-site-association'));
+    assert.deepEqual(aasa.applinks.details[0].appIDs, config.app.appleAppIds);
+    assert.deepEqual(aasa.applinks.details[0].components, [{ '/': '/s' }, { '/': '/s/*' }]);
+    assert.match(read('_headers'), /^\/\.well-known\/apple-app-site-association\n {2}Content-Type: application\/json$/m);
+  });
+
+  it('uses Team ID and bundle ID in the app ID', () => {
+    for (const id of config.app.appleAppIds) assert.match(id, /^[A-Z0-9]{10}\.no\.sharpnet\.buddyworkout$/);
+    assert.deepEqual(appleAppSiteAssociation(app).applinks.details[0].appIDs, app.appleAppIds);
+  });
+
+  it('leaves out assetlinks.json while no Android fingerprint is configured', () => {
+    assert.equal(config.app.androidCertFingerprints.length === 0, !existsSync(join(dist, '.well-known/assetlinks.json')));
+  });
+
+  it('writes Android app links for the package and fingerprints', () => {
+    const [entry] = assetLinks({ ...app, androidCertFingerprints: [fingerprint] });
+    assert.deepEqual(entry.relation, ['delegate_permission/common.handle_all_urls']);
+    assert.deepEqual(entry.target, {
+      namespace: 'android_app',
+      package_name: 'no.example.app',
+      sha256_cert_fingerprints: [fingerprint],
+    });
+  });
+
+  it('rejects a malformed fingerprint', () => {
+    assert.throws(() => assetLinks({ ...app, androidCertFingerprints: [fingerprint.toLowerCase()] }));
+    assert.throws(() => assetLinks({ ...app, androidCertFingerprints: ['AB:CD'] }));
+  });
+
+  it('serves the fallback page at /s and under /s/, in both languages, without scripts', () => {
+    assert.match(read('_redirects'), /^\/s\/\* \/s 200$/m);
+    const html = read('s.html');
+    assert.match(html, /<meta name="robots" content="noindex">/);
+    assert.match(html, /<html lang="en">/);
+    assert.match(html, /<section lang="nb">/);
+    assert.match(html, /href="\/style\.css"/);
+    assert.ok(!/<script/i.test(html));
   });
 });
 
