@@ -42,7 +42,7 @@ ${links}
 <div class="cards">
   <div class="card"><h3>A timer you can trust</h3><p>Time is kept by the clock, so it stays correct when the screen locks or the app is in the background. Sound and haptic cues mark each phase.</p></div>
   <div class="card"><h3>Share by link</h3><p>Send an exercise or a whole session by SMS, e-mail or any messaging app. The friend opens the link in the app and chooses what to keep.</p></div>
-  <div class="card"><h3>Private by design</h3><p>Exercises, history and contacts stay on your phone. There is no server and no account. <a href="privacy">Read the privacy policy</a>.</p></div>
+  <div class="card"><h3>Private by design</h3><p>Exercises, history and settings stay on your phone. There is no server and no account. <a href="privacy">Read the privacy policy</a>.</p></div>
 </div>
 <p>Questions or feedback? See <a href="support">Support</a> or write to <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
     },
@@ -54,7 +54,7 @@ ${links}
 <p class="lead">Need help with BuddyWorkout? Write to <a href="mailto:${owner.email}">${owner.email}</a> and include your phone model and the app version. You normally get a reply within a few working days.</p>
 <h2>Common questions</h2>
 <details><summary>How does sharing work?</summary>
-<p>Open an exercise or a session and choose Share. The app builds a link on your phone and opens the share sheet, so you choose how to send it: SMS, e-mail or a messaging app. The link contains the exercise or session you chose, nothing else. Your friend taps the link, sees the content, and decides whether to save it. Nothing is saved automatically.</p></details>
+<p>Open an exercise or a session and choose Share. The app builds a link on your phone and opens the share sheet, so you choose how to send it: SMS, e-mail or a messaging app. The link contains the exercise or session you chose, and for a session the name you entered as sender, nothing else. Your friend taps the link, sees the content, and decides whether to save it. Nothing is saved automatically.</p></details>
 <details><summary>My friend does not have the app. Can they open the link?</summary>
 <p>Not yet. The link opens in the app, so your friend needs BuddyWorkout installed first. Some Android messaging apps do not make the link tappable: use Copy link in the share sheet and paste it into the message.</p></details>
 <details><summary>The link is too long to send by SMS.</summary>
@@ -70,7 +70,7 @@ ${links}
     },
     privacy: {
       title: 'Privacy policy: BuddyWorkout',
-      description: 'BuddyWorkout has no accounts, no analytics and no server. Your exercises, history and contacts stay on your phone. Read the full privacy policy.',
+      description: 'BuddyWorkout has no accounts, no analytics and no server. Your exercises, history and settings stay on your phone. Read the full privacy policy.',
       body: ({ owner, updated }) => `
 <h1>Privacy policy</h1>
 <p class="lead">In short: BuddyWorkout collects no personal data. Everything you create stays on your phone.</p>
@@ -85,7 +85,7 @@ ${links}
 </dl>
 
 <h2>What the app stores</h2>
-<p>The app stores the following on your phone only, in a local database: your exercises and sessions, your workout history, the contacts you add (names you type yourself, used to remember who you shared with), and your settings (language, appearance, sound and haptics). We cannot see this data. It is not sent to us or to anyone else.</p>
+<p>The app stores the following on your phone only, in a local database: your exercises and sessions, your workout history, the names you type yourself (your own name for shared sessions, and the two names in a buddy workout), and your settings (sound, haptics, beep volume, lowering the music during beeps, and the Åse Marie countdown). We cannot see this data. It is not sent to us or to anyone else.</p>
 <p>The app does not ask for access to your phone's contact list, location, camera, microphone or photos.</p>
 
 <h2>What the app does not do</h2>
@@ -97,7 +97,7 @@ ${links}
 </ul>
 
 <h2>Sharing with a friend</h2>
-<p>When you share an exercise or session, the app builds a link on your phone. The link contains the data you chose to share (for example exercise names, times and comments). You send the link yourself through your phone's share sheet, using the SMS, e-mail or messaging app you pick. That app and its provider handle the message under their own privacy policies. We never receive the link. A friend who opens it sees the content and decides whether to save it; nothing is saved automatically. Do not put information in comments that you do not want the recipient, or the messaging service, to see.</p>
+<p>When you share an exercise or session, the app builds a link on your phone. The link contains the data you chose to share (for example exercise names, times and comments) and, for a session, the name you entered as sender. You send the link yourself through your phone's share sheet, using the SMS, e-mail or messaging app you pick. That app and its provider handle the message under their own privacy policies. We never receive the link. A friend who opens it sees the content and decides whether to save it; nothing is saved automatically. Do not put information in comments that you do not want the recipient, or the messaging service, to see.</p>
 
 <h2>Updates</h2>
 <p>The only network connection the app makes by itself is a check for app updates, through Expo's update service (expo-updates). Like any internet request, this reveals your IP address to the update service, together with technical details needed to pick the right update: the app version, the platform (iOS or Android) and the update channel. No personal data and no content from the app is sent. The app's own code does not make other network requests, so the app works fully offline.</p>
@@ -133,7 +133,7 @@ ${links}
 <div class="cards">
   <div class="card"><h3>En timer du kan stole på</h3><p>Tiden regnes ut fra klokka, så den holder riktig selv om skjermen låses eller appen er i bakgrunnen. Lyd og haptikk markerer hver fase.</p></div>
   <div class="card"><h3>Del med lenke</h3><p>Send en øvelse eller en hel økt på SMS, e-post eller i en meldingsapp. Vennen åpner lenken i appen og velger hva som skal lagres.</p></div>
-  <div class="card"><h3>Personvern fra grunnen</h3><p>Øvelser, historikk og kontakter blir på telefonen din. Ingen server og ingen konto. <a href="personvern">Les personvernerklæringen</a>.</p></div>
+  <div class="card"><h3>Personvern fra grunnen</h3><p>Øvelser, historikk og innstillinger blir på telefonen din. Ingen server og ingen konto. <a href="personvern">Les personvernerklæringen</a>.</p></div>
 </div>
 <p>Spørsmål eller tilbakemelding? Se <a href="support">Support</a> eller skriv til <a href="mailto:${owner.email}">${owner.email}</a>.</p>`,
     },
@@ -145,7 +145,7 @@ ${links}
 <p class="lead">Trenger du hjelp med BuddyWorkout? Skriv til <a href="mailto:${owner.email}">${owner.email}</a> og ta med telefonmodell og appversjon. Du får vanligvis svar innen noen få virkedager.</p>
 <h2>Vanlige spørsmål</h2>
 <details><summary>Hvordan fungerer deling?</summary>
-<p>Åpne en øvelse eller en økt og velg Del. Appen lager en lenke på telefonen din og åpner delingsmenyen, så du velger selv hvordan den sendes: SMS, e-post eller en meldingsapp. Lenken inneholder øvelsen eller økten du valgte, ikke noe annet. Vennen din trykker på lenken, ser innholdet og bestemmer om det skal lagres. Ingenting lagres automatisk.</p></details>
+<p>Åpne en øvelse eller en økt og velg Del. Appen lager en lenke på telefonen din og åpner delingsmenyen, så du velger selv hvordan den sendes: SMS, e-post eller en meldingsapp. Lenken inneholder øvelsen eller økten du valgte, og for en økt navnet du skrev inn som avsender, ikke noe annet. Vennen din trykker på lenken, ser innholdet og bestemmer om det skal lagres. Ingenting lagres automatisk.</p></details>
 <details><summary>Vennen min har ikke appen. Kan de åpne lenken?</summary>
 <p>Ikke ennå. Lenken åpnes i appen, så vennen din må ha BuddyWorkout installert først. Noen meldingsapper på Android gjør ikke lenken trykkbar: bruk Kopier lenke i delingsmenyen og lim den inn i meldingen.</p></details>
 <details><summary>Lenken er for lang til SMS.</summary>
@@ -161,7 +161,7 @@ ${links}
     },
     privacy: {
       title: 'Personvernerklæring: BuddyWorkout',
-      description: 'BuddyWorkout har ingen kontoer, ingen analyse og ingen server. Øvelser, historikk og kontakter blir på telefonen din. Les hele personvernerklæringen.',
+      description: 'BuddyWorkout har ingen kontoer, ingen analyse og ingen server. Øvelser, historikk og innstillinger blir på telefonen din. Les hele personvernerklæringen.',
       body: ({ owner, updated }) => `
 <h1>Personvernerklæring</h1>
 <p class="lead">Kort fortalt: BuddyWorkout samler ikke inn personopplysninger. Alt du lager blir på telefonen din.</p>
@@ -176,7 +176,7 @@ ${links}
 </dl>
 
 <h2>Hva appen lagrer</h2>
-<p>Appen lagrer følgende bare på telefonen din, i en lokal database: øvelsene og øktene dine, treningshistorikken, kontaktene du legger til (navn du skriver inn selv, brukt for å huske hvem du har delt med) og innstillingene dine (språk, utseende, lyd og haptikk). Vi kan ikke se disse dataene. De sendes ikke til oss eller til noen andre.</p>
+<p>Appen lagrer følgende bare på telefonen din, i en lokal database: øvelsene og øktene dine, treningshistorikken, navn du skriver inn selv (ditt eget navn for delte økter og de to navnene i en buddytrening) og innstillingene dine (lyd, haptikk, lydstyrke på bip, demping av musikken under bip og Åse Marie-nedtellingen). Vi kan ikke se disse dataene. De sendes ikke til oss eller til noen andre.</p>
 <p>Appen ber ikke om tilgang til telefonens kontaktliste, posisjon, kamera, mikrofon eller bilder.</p>
 
 <h2>Hva appen ikke gjør</h2>
@@ -188,7 +188,7 @@ ${links}
 </ul>
 
 <h2>Deling med en venn</h2>
-<p>Når du deler en øvelse eller økt, lager appen en lenke på telefonen din. Lenken inneholder dataene du valgte å dele (for eksempel øvelsesnavn, tider og kommentarer). Du sender lenken selv via telefonens delingsmeny, med SMS-, e-post- eller meldingsappen du velger. Den appen og leverandøren av den behandler meldingen etter sine egne personvernregler. Vi mottar aldri lenken. En venn som åpner den, ser innholdet og bestemmer om det skal lagres. Ingenting lagres automatisk. Ikke skriv opplysninger i kommentarer som du ikke vil at mottakeren eller meldingstjenesten skal se.</p>
+<p>Når du deler en øvelse eller økt, lager appen en lenke på telefonen din. Lenken inneholder dataene du valgte å dele (for eksempel øvelsesnavn, tider og kommentarer) og, for en økt, navnet du skrev inn som avsender. Du sender lenken selv via telefonens delingsmeny, med SMS-, e-post- eller meldingsappen du velger. Den appen og leverandøren av den behandler meldingen etter sine egne personvernregler. Vi mottar aldri lenken. En venn som åpner den, ser innholdet og bestemmer om det skal lagres. Ingenting lagres automatisk. Ikke skriv opplysninger i kommentarer som du ikke vil at mottakeren eller meldingstjenesten skal se.</p>
 
 <h2>Oppdateringer</h2>
 <p>Den eneste nettverksforbindelsen appen oppretter selv, er en sjekk etter appoppdateringer via Expos oppdateringstjeneste (expo-updates). Som alle internettforespørsler viser dette IP-adressen din til oppdateringstjenesten, sammen med tekniske opplysninger som trengs for å velge riktig oppdatering: appversjon, plattform (iOS eller Android) og oppdateringskanal. Ingen personopplysninger og intet innhold fra appen sendes. Appens egen kode gjør ingen andre nettverksforespørsler, så appen fungerer helt uten nett.</p>
