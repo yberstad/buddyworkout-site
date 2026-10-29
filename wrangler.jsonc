@@ -1,6 +1,9 @@
 {
   "name": "buddyworkout-site",
   "compatibility_date": "2026-10-29",
+  // The site is served only on its custom domain (buddyworkout.com), not on *.workers.dev.
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
