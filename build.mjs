@@ -60,17 +60,14 @@ function badgesOf(config, lang) {
   return badges.length ? `  <div class="badges">${badges.join('')}</div>` : '';
 }
 
-/** Icon and Open Graph tags: what link previews show next to the title. Absolute URLs, as previews need. */
+/** Icon and Open Graph tags for link previews. No og:image: it makes iMessage show a large card; the touch icon gives a small icon beside the title. */
 function previewTags(config, title, description, base) {
   return `<link rel="icon" href="${base}favicon.png">
 <link rel="apple-touch-icon" href="${base}apple-touch-icon.png">
 <meta property="og:site_name" content="${escapeHtml(config.appName)}">
 <meta property="og:type" content="website">
 <meta property="og:title" content="${escapeHtml(title)}">
-<meta property="og:description" content="${escapeHtml(description)}">
-<meta property="og:image" content="${config.siteUrl}/app-icon.png">
-<meta property="og:image:width" content="512">
-<meta property="og:image:height" content="512">`;
+<meta property="og:description" content="${escapeHtml(description)}">`;
 }
 
 /** Fallback for share links (/s and /s/…) on a device without the app. Paths are root-absolute: it is served under /s/. */
@@ -171,9 +168,8 @@ export function build({ production = false } = {}) {
   cpSync(join(root, 'src', 'style.css'), join(dist, 'style.css'));
   cpSync(join(root, 'src', 'fonts'), join(dist, 'fonts'), { recursive: true });
   cpSync(join(root, 'src', 'favicon.png'), join(dist, 'favicon.png'));
-  // The full app icon, for link previews (iMessage, WhatsApp, …) and the home-screen icon.
+  // The full app icon, for link previews and the home-screen icon.
   cpSync(join(root, 'src', 'apple-touch-icon.png'), join(dist, 'apple-touch-icon.png'));
-  cpSync(join(root, 'src', 'app-icon.png'), join(dist, 'app-icon.png'));
 
   const urls = [];
   for (const lang of langs) {
