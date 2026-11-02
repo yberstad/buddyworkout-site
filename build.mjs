@@ -60,6 +60,19 @@ function badgesOf(config, lang) {
   return badges.length ? `  <div class="badges">${badges.join('')}</div>` : '';
 }
 
+/** Icon and Open Graph tags: what link previews show next to the title. Absolute URLs, as previews need. */
+function previewTags(config, title, description, base) {
+  return `<link rel="icon" href="${base}favicon.png">
+<link rel="apple-touch-icon" href="${base}apple-touch-icon.png">
+<meta property="og:site_name" content="${escapeHtml(config.appName)}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:image" content="${config.siteUrl}/app-icon.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">`;
+}
+
 /** Fallback for share links (/s and /s/…) on a device without the app. Paths are root-absolute: it is served under /s/. */
 function renderSharePage(config) {
   const { en, nb } = sharePage;
@@ -71,7 +84,7 @@ function renderSharePage(config) {
 <title>${escapeHtml(en.title)}</title>
 <meta name="robots" content="noindex">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" href="/favicon.png">
+${previewTags(config, en.title, en.text, '/')}
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -129,7 +142,7 @@ function renderPage(config, lang, slug) {
 ${alt('en')}
 ${alt('nb')}
 <link rel="alternate" hreflang="x-default" href="${urlOf(config.siteUrl, 'en', slug)}">
-<link rel="icon" href="${up}favicon.png">
+${previewTags(config, page.title, page.description, up)}
 <link rel="stylesheet" href="${up}style.css">
 </head>
 <body>
@@ -158,6 +171,9 @@ export function build({ production = false } = {}) {
   cpSync(join(root, 'src', 'style.css'), join(dist, 'style.css'));
   cpSync(join(root, 'src', 'fonts'), join(dist, 'fonts'), { recursive: true });
   cpSync(join(root, 'src', 'favicon.png'), join(dist, 'favicon.png'));
+  // The full app icon, for link previews (iMessage, WhatsApp, …) and the home-screen icon.
+  cpSync(join(root, 'src', 'apple-touch-icon.png'), join(dist, 'apple-touch-icon.png'));
+  cpSync(join(root, 'src', 'app-icon.png'), join(dist, 'app-icon.png'));
 
   const urls = [];
   for (const lang of langs) {
