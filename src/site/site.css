@@ -68,7 +68,7 @@ a{color:var(--g);text-decoration:none}a:hover{color:#6EE7B7}
 [data-theme=light] .nav{background:rgba(255,255,255,.72)}
 [data-theme=light] .nav .seg{background:rgba(0,0,0,.05)}
 [data-theme=light] .nav .seg a.on,[data-theme=light] .nav .seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-[data-theme=light] .nav .get{background:#059669;color:#fff}[data-theme=light] .nav .get:hover{background:#047857;color:#fff}
+[data-theme=light] .nav .get{background:#047857;color:#fff}[data-theme=light] .nav .get:hover{background:#065F46;color:#fff}
 [data-theme=light] a{color:#047857}[data-theme=light] .nav .seg a{color:var(--ink2)}[data-theme=light] .nav .seg a.on{color:var(--ink)}[data-theme=light] .sb{color:inherit}[data-theme=light] a:hover{color:#065F46}
 [data-theme=light] .kick{color:var(--kc-light,#047857)!important}
 [data-theme=light] .phone{box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 40px 80px -30px rgba(15,23,42,.35),0 0 0 1px rgba(0,0,0,.06)}

@@ -14,7 +14,7 @@ export function ballsHtml(d) {
 export function navHtml(lang, { noHref, enHref }) {
   const t = T[lang];
   const on = (l) => (l === lang ? ' class="on" aria-current="true"' : '');
-  return `<header class="nav"><a class="brand" href="#top">${ballsHtml(18)}<span>BuddyWorkout</span></a>
+  return `<header class="nav"><a class="brand" href="#top" aria-label="BuddyWorkout">${ballsHtml(18)}<span>BuddyWorkout</span></a>
 <div class="seg" role="group" aria-label="${t['a11y.theme']}"><button type="button" data-th="light">${t.light}</button><button type="button" data-th="dark">${t.dark}</button></div>
 <nav class="seg" aria-label="${t['a11y.lang']}"><a href="${noHref}" lang="nb" hreflang="nb"${on('no')}>NO</a><a href="${enHref}" lang="en" hreflang="en"${on('en')}>EN</a></nav>
 <a class="get" href="#download">${t.get}</a></header>`;

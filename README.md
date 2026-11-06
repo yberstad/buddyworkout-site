@@ -1,7 +1,7 @@
 # BuddyWorkout website
 
-Static site (English at `/`, Norwegian at `/no/`) with Home, Support and Privacy policy.
-No cookies, analytics, third-party scripts or external requests. Inter is self-hosted.
+Static site (English at `/`, Norwegian at `/no/`) with an animated Home page, Support and Privacy policy.
+No cookies, analytics, third-party scripts or external requests. All fonts are self-hosted.
 
 ```sh
 npm test                 # builds and checks pages, links, hreflang, no external requests
@@ -27,10 +27,26 @@ Set up in the Cloudflare dashboard (2026-10-29):
 The host serves `privacy.html` at `/privacy` and redirects the `.html` URL there (307), so links, canonical URLs and
 the sitemap use URLs without `.html`.
 
+## Home page
+
+The home page is prerendered per language by `build.mjs` from `src/home.html`. Its files are in `src/site/`:
+
+- `copy.js`: all copy (`T.no`, `T.en`), page title and description (`meta.title`, `meta.desc`), and the chapter list `CH`.
+  Edit the text here, then redeploy. The NO/EN switch links between `/no/` and `/`.
+- `render.js`: nav, chapter, download and footer markup. `home.js` and `site-core.js`: scroll motion, the orb, the theme switch.
+- `site.css`: light theme (default) and dark theme. `img/`: screenshots as `.webp` with `.png` fallback, about 900 px wide.
+- `badges/`: the official, unmodified store badges. Do not recolour, crop or add borders. Keep them 48 px tall.
+
+To switch on the audio chapter: in `copy.js`, uncomment the `audio` line in `CH`. Its copy is already in `T`, and the screenshot
+`settings-audio` is in `img/`.
+
+The example buddy names in the orb are in `site-core.js` (`orbState`, case `buddy`). The buddy screenshots show the names too.
+
 ## Config
 
 Everything the owner may change is in `site.config.json`: `siteUrl`, owner details, "last updated" date, store links
-and the app IDs for share links. Store badges stay hidden while `storeLinks` are empty. `SITE_URL=... npm run build`
+and the app IDs for share links. A store badge stays hidden while its `storeLinks` URL is empty. On a phone, the nav
+"Last ned" button goes to that device's store. `SITE_URL=... npm run build`
 overrides `siteUrl` for one build. All internal page links are relative.
 
 When you change the text of the privacy policy, update `updated` in `site.config.json`.
