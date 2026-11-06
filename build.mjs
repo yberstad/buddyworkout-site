@@ -12,18 +12,20 @@ const root = dirname(fileURLToPath(import.meta.url));
 const langs = ['en', 'nb'];
 const slugs = ['home', 'support', 'privacy'];
 const dirOf = (lang) => (lang === 'en' ? '' : 'no/');
+/** Norwegian is the default: the home page is at `/`, English at `/en/`. Support and privacy URLs are published in the stores and stay put. */
+const homeDirOf = (lang) => (lang === 'en' ? 'en/' : '');
 
 const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 
 /** File of a page from the site root, e.g. `no/personvern.html`. */
-const pathOf = (lang, slug) => dirOf(lang) + files[lang][slug];
+const pathOf = (lang, slug) => (slug === 'home' ? homeDirOf(lang) : dirOf(lang)) + files[lang][slug];
 
 /** Page name in URLs: no `.html` (the host redirects `.html` to it), and '' for the home page. */
 const nameOf = (lang, slug) => (slug === 'home' ? '' : files[lang][slug].replace(/\.html$/, ''));
 
 /** Public URL of a page, e.g. `https://buddyworkout.com/no/personvern`. */
 function urlOf(siteUrl, lang, slug) {
-  return `${siteUrl}/${dirOf(lang)}${nameOf(lang, slug)}`;
+  return `${siteUrl}/${slug === 'home' ? homeDirOf(lang) : dirOf(lang)}${nameOf(lang, slug)}`;
 }
 
 const fingerprintPattern = /^([0-9A-F]{2}:){31}[0-9A-F]{2}$/;
@@ -112,7 +114,7 @@ export function loadConfig() {
 function renderHome(config, lang) {
   const t = ui[lang];
   const k = lang === 'en' ? 'en' : 'no';
-  const up = lang === 'en' ? '' : '../';
+  const up = lang === 'en' ? '../' : '';
   const copy = T[k];
   const links = { ios: config.storeLinks.appStore, android: config.storeLinks.googlePlay };
   const stores = storesHtml(k, links, `${up}site/badges/`);
@@ -122,15 +124,18 @@ function renderHome(config, lang) {
     title: escapeHtml(copy['meta.title']),
     description: escapeHtml(copy['meta.desc']),
     canonical: urlOf(config.siteUrl, lang, 'home'),
-    alternates: `${alt('en')}\n${alt('nb')}\n<link rel="alternate" hreflang="x-default" href="${urlOf(config.siteUrl, 'en', 'home')}">`,
+    alternates: `${alt('en')}\n${alt('nb')}\n<link rel="alternate" hreflang="x-default" href="${urlOf(config.siteUrl, 'nb', 'home')}">`,
     preview: previewTags(config, copy['meta.title'], copy['meta.desc'], up),
     up,
     skip: copy['a11y.skip'],
-    nav: navHtml(k, { noHref: lang === 'en' ? 'no/' : './', enHref: lang === 'en' ? './' : '../' }),
+    nav: navHtml(k, { noHref: lang === 'en' ? '../' : './', enHref: lang === 'en' ? './' : 'en/' }),
     heroStores: stores,
     chapters: CH.map((c) => chapterHtml(c, k)).join('\n'),
     end: endHtml(k, stores),
-    foot: footHtml(k, { privacyHref: nameOf(lang, 'privacy'), supportHref: nameOf(lang, 'support') }),
+    foot: footHtml(k, {
+      privacyHref: (lang === 'en' ? '../' : 'no/') + nameOf(lang, 'privacy'),
+      supportHref: (lang === 'en' ? '../' : 'no/') + nameOf(lang, 'support'),
+    }),
     'hero.kick': copy['hero.kick'], 'hero.title': copy['hero.title'], 'hero.sub': copy['hero.sub'],
     'timer.kick': copy['timer.kick'], 'timer.title': copy['timer.title'], 'timer.body': copy['timer.body'],
   };
@@ -144,7 +149,7 @@ function renderPage(config, lang, slug) {
   const page = pages[lang][slug];
 
   // Links relative to the current folder, without `.html`, so the site works under any base path.
-  const href = (toSlug) => nameOf(lang, toSlug) || './';
+  const href = (toSlug) => (toSlug === 'home' ? (lang === 'en' ? 'en/' : '../') : nameOf(lang, toSlug));
   const switchTarget = (lang === 'en' ? 'no/' : '../') + nameOf(other, slug);
   const links = badgesOf(config, lang);
 
@@ -195,6 +200,7 @@ export function build({ production = false } = {}) {
   const dist = join(root, 'dist');
   rmSync(dist, { recursive: true, force: true });
   mkdirSync(join(dist, 'no'), { recursive: true });
+  mkdirSync(join(dist, 'en'), { recursive: true });
 
   cpSync(join(root, 'src', 'style.css'), join(dist, 'style.css'));
   cpSync(join(root, 'src', 'fonts'), join(dist, 'fonts'), { recursive: true });
@@ -225,7 +231,7 @@ export function build({ production = false } = {}) {
 
   // Share link fallback, and the files that let the app open https://<site>/s links (universal links, app links).
   writeFileSync(join(dist, 's.html'), renderSharePage(config));
-  writeFileSync(join(dist, '_redirects'), '/s/* /s 200\n');
+  writeFileSync(join(dist, '_redirects'), '/s/* /s 200\n/no / 301\n/no/ / 301\n');
   mkdirSync(join(dist, '.well-known'));
   writeFileSync(
     join(dist, '.well-known', 'apple-app-site-association'),

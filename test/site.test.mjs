@@ -8,9 +8,9 @@ let dist;
 let config;
 const pages = [
   'index.html',
+  'en/index.html',
   'support.html',
   'privacy.html',
-  'no/index.html',
   'no/support.html',
   'no/personvern.html',
 ];
@@ -30,13 +30,13 @@ describe('pages', () => {
   it('has lang, title, description, canonical and hreflang pairs', () => {
     for (const p of pages) {
       const html = read(p);
-      const lang = p.startsWith('no/') ? 'nb' : 'en';
+      const lang = p.startsWith('no/') || p === 'index.html' ? 'nb' : 'en';
       assert.match(html, new RegExp(`<html lang="${lang}"( data-theme="light")?>`), p);
       assert.match(html, /<title>[^<]{10,}<\/title>/, p);
       assert.match(html, /<meta name="description" content="[^"]{50,}">/, p);
       assert.match(html, /<link rel="canonical" href="https:\/\/example\.test\/base\//, p);
       assert.match(html, /hreflang="en" href="https:\/\/example\.test\/base\//, p);
-      assert.match(html, /hreflang="nb" href="https:\/\/example\.test\/base\/no\//, p);
+      assert.match(html, /hreflang="nb" href="https:\/\/example\.test\/base\/(no\/)?/, p);
       assert.match(html, /hreflang="x-default"/, p);
     }
   });
@@ -44,7 +44,8 @@ describe('pages', () => {
   it('uses the configured site URL in canonical links, sitemap and robots', () => {
     assert.match(read('privacy.html'), /rel="canonical" href="https:\/\/example\.test\/base\/privacy"/);
     assert.match(read('no/personvern.html'), /rel="canonical" href="https:\/\/example\.test\/base\/no\/personvern"/);
-    assert.match(read('no/index.html'), /rel="canonical" href="https:\/\/example\.test\/base\/no\/"/);
+    assert.match(read('index.html'), /rel="canonical" href="https:\/\/example\.test\/base\/"/);
+    assert.match(read('en/index.html'), /rel="canonical" href="https:\/\/example\.test\/base\/en\/"/);
     assert.match(read('sitemap.xml'), /<loc>https:\/\/example\.test\/base\/no\/support<\/loc>/);
     assert.ok(!/\.html/.test(read('sitemap.xml')), 'sitemap has .html URLs');
     assert.match(read('robots.txt'), /Sitemap: https:\/\/example\.test\/base\/sitemap\.xml/);
@@ -66,15 +67,15 @@ describe('pages', () => {
   });
 
   it('prerenders the home page copy per language, with title, theme colour and footer links', () => {
-    const en = read('index.html');
-    const nb = read('no/index.html');
+    const en = read('en/index.html');
+    const nb = read('index.html');
     assert.match(en, /<title>BuddyWorkout: Interval timer for running and climbing<\/title>/);
     assert.match(nb, /<title>BuddyWorkout: Intervalltimer for løping og klatring<\/title>/);
     assert.match(en, /<h1 class="h1">Intervals, together\.<\/h1>/);
     assert.match(nb, /<h1 class="h1">Intervaller, sammen\.<\/h1>/);
     assert.match(nb, /<meta name="theme-color" content="#FFFFFF">/);
-    assert.match(en, /href="privacy">Privacy policy/);
-    assert.match(nb, /href="personvern">Personvern/);
+    assert.match(en, /href="\.\.\/privacy">Privacy policy/);
+    assert.match(nb, /href="no\/personvern">Personvern/);
     assert.match(en, /Apple and the App Store are trademarks of Apple Inc\./);
     assert.match(nb, /Google Play og Google Play-logoen er varemerker for Google LLC\./);
   });
@@ -107,7 +108,7 @@ describe('links and requests', () => {
       const text = read(p);
       // Only the animated home pages run scripts, and only same-origin files.
       const scripts = text.match(/<script[^>]*>/gi) ?? [];
-      const isHome = p === 'index.html' || p === 'no/index.html';
+      const isHome = p === 'index.html' || p === 'en/index.html';
       assert.ok(isHome || scripts.length === 0, `${p} has a script`);
       for (const tag of scripts) assert.match(tag, /^<script (type="module" )?src="(\.\.\/)?site\/[\w-]+\.js">$/, `${p}: ${tag}`);
       assert.ok(!/<iframe|<img[^>]+src="https?:|url\(\s*['"]?https?:|@import/i.test(text), `${p} loads a remote resource`);
@@ -120,14 +121,15 @@ describe('links and requests', () => {
   it('switches language between the matching pages', () => {
     assert.match(read('privacy.html'), /href="no\/personvern" lang="nb"/);
     assert.match(read('no/personvern.html'), /href="\.\.\/privacy" lang="en"/);
-    assert.match(read('no/index.html'), /href="\.\.\/" lang="en"/);
-    assert.match(read('index.html'), /href="no\/" lang="nb"/);
+    assert.match(read('index.html'), /href="en\/" lang="en"/);
+    assert.match(read('en/index.html'), /href="\.\.\/" lang="nb"/);
+    assert.match(read('_redirects'), /^\/no \/ 301$/m);
   });
 
   it('sets aria-current on the active nav link and has a skip link and one h1', () => {
     for (const p of pages) {
       const html = read(p);
-      const home = p === 'index.html' || p === 'no/index.html';
+      const home = p === 'index.html' || p === 'en/index.html';
       if (!home) assert.equal((html.match(/aria-current="page"/g) ?? []).length, 1, p);
       assert.match(html, home ? /class="skip" href="#chapters"/ : /class="skip" href="#content"/, p);
       assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, p);

@@ -1,6 +1,7 @@
 # BuddyWorkout website
 
-Static site (English at `/`, Norwegian at `/no/`) with an animated Home page, Support and Privacy policy.
+Static site with an animated Home page (Norwegian at `/`, English at `/en/`), and Support and Privacy policy pages
+(English at `/privacy`, `/support`; Norwegian at `/no/personvern`, `/no/support`; these URLs are published in the stores).
 No cookies, analytics, third-party scripts or external requests. All fonts are self-hosted.
 
 ```sh
@@ -32,7 +33,7 @@ the sitemap use URLs without `.html`.
 The home page is prerendered per language by `build.mjs` from `src/home.html`. Its files are in `src/site/`:
 
 - `copy.js`: all copy (`T.no`, `T.en`), page title and description (`meta.title`, `meta.desc`), and the chapter list `CH`.
-  Edit the text here, then redeploy. The NO/EN switch links between `/no/` and `/`.
+  Edit the text here, then redeploy. The NO/EN switch links between `/` and `/en/`. `/no/` redirects to `/`.
 - `render.js`: nav, chapter, download and footer markup. `home.js` and `site-core.js`: scroll motion, the orb, the theme switch.
 - `site.css`: light theme (default) and dark theme. `img/`: screenshots as `.webp` with `.png` fallback, about 900 px wide.
 - `badges/`: the official, unmodified store badges. Do not recolour, crop or add borders. Keep them 48 px tall.
