@@ -15,13 +15,12 @@ export function navHtml(lang, { noHref, enHref }) {
   const t = T[lang];
   const on = (l) => (l === lang ? ' class="on" aria-current="true"' : '');
   return `<header class="nav"><a class="brand" href="#top" aria-label="BuddyWorkout">${ballsHtml(18)}<span>BuddyWorkout</span></a>
-<div class="seg" role="group" aria-label="${t['a11y.theme']}"><button type="button" data-th="light">${t.light}</button><button type="button" data-th="dark">${t.dark}</button></div>
 <nav class="seg" aria-label="${t['a11y.lang']}"><a href="${noHref}" lang="nb" hreflang="nb"${on('no')}>NO</a><a href="${enHref}" lang="en" hreflang="en"${on('en')}>EN</a></nav>
 <a class="get" href="#download">${t.get}</a></header>`;
 }
 
 /**
- * Official store badges, unmodified. App Store: black badge in light theme, white in dark (CSS picks one).
+ * Official store badges, unmodified (black App Store badge; the site is light only).
  * Google Play: its PNG has built-in clear space; per-language height makes the badge body 48 px tall.
  * A badge is left out while its store URL is empty.
  */
@@ -29,7 +28,7 @@ export function storesHtml(lang, links, base) {
   const t = T[lang], l = lang === 'no' ? 'nb' : 'en';
   const out = [];
   if (links.ios) {
-    out.push(`<a class="sb sb-apple" href="${esc(links.ios)}"><img class="b-light" src="${base}appstore-${l}-black.svg" alt="${t['badge.apple']}" width="143.6" height="48"><img class="b-dark" src="${base}appstore-${l}-white.svg" alt="${t['badge.apple']}" width="143.6" height="48"></a>`);
+    out.push(`<a class="sb sb-apple" href="${esc(links.ios)}"><img src="${base}appstore-${l}-black.svg" alt="${t['badge.apple']}" width="143.6" height="48"></a>`);
   }
   if (links.android) {
     out.push(`<a class="sb sb-google sb-google-${l}" href="${esc(links.android)}"><img src="${base}googleplay-${l}.png" alt="${t['badge.google']}" width="646" height="250"></a>`);

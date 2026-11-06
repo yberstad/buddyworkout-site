@@ -31,7 +31,7 @@ describe('pages', () => {
     for (const p of pages) {
       const html = read(p);
       const lang = p.startsWith('no/') ? 'nb' : 'en';
-      assert.match(html, new RegExp(`<html lang="${lang}">`), p);
+      assert.match(html, new RegExp(`<html lang="${lang}"( data-theme="light")?>`), p);
       assert.match(html, /<title>[^<]{10,}<\/title>/, p);
       assert.match(html, /<meta name="description" content="[^"]{50,}">/, p);
       assert.match(html, /<link rel="canonical" href="https:\/\/example\.test\/base\//, p);

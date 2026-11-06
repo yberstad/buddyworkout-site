@@ -3,15 +3,12 @@ import { G, R, O, A, T, CH } from './copy.js';
 import { ballsHtml } from './render.js';
 
 const IMG = new URL('./img/', import.meta.url).href;
-function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
 const BW = {
   G, R, O, A, CH,
   TRAIN: [2, 4, 6, 9, 11, 12, 16, 18, 20, 23, 25, 27, 30],
   INK: { [G]: '#047857', [R]: '#B91C1C', [O]: '#C2410C', [A]: '#92400E' },
   // Language is fixed by the URL (/ = English, /no/ = Norwegian); the NO/EN switch is a link between the two pages.
   lang: document.documentElement.lang === 'nb' ? 'no' : 'en',
-  theme: store('bw-site-theme') || 'light',
-  setTheme(t) { BW.theme = t; store('bw-site-theme', t); document.documentElement.dataset.theme = t; document.querySelectorAll('button[data-th]').forEach(b => b.classList.toggle('on', b.dataset.th === t)); },
   t(k) { return T[BW.lang][k] ?? k; },
   o() { return T[BW.lang].o; },
   clamp: (v, a = 0, b = 1) => Math.min(b, Math.max(a, v)),
@@ -23,10 +20,8 @@ const BW = {
   prog(el) { const r = el.getBoundingClientRect(); return BW.clamp(-r.top / (r.height - BW.vh())); },
   balls(d) { const t = document.createElement('template'); t.innerHTML = ballsHtml(d); return t.content.firstElementChild; },
   LINKS: { ios: document.body.dataset.ios || '', android: document.body.dataset.android || '' },
-  /** Wire the prerendered nav: theme switch, and on a phone the "Last ned" button goes to that device's store. */
+  /** Wire the prerendered nav: on a phone the "Last ned" button goes to that device's store. */
   initNav() {
-    document.querySelectorAll('button[data-th]').forEach(b => b.onclick = () => BW.setTheme(b.dataset.th));
-    BW.setTheme(BW.theme);
     const get = document.querySelector('.nav .get'), ua = navigator.userAgent;
     const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const store = ios ? BW.LINKS.ios : /Android/.test(ua) ? BW.LINKS.android : '';
@@ -118,6 +113,5 @@ const BW = {
     }
   },
 };
-document.documentElement.dataset.theme = BW.theme;
 let __st; addEventListener('scroll', () => { document.querySelectorAll('.orb').forEach(o => o.classList.add('scrolling')); clearTimeout(__st); __st = setTimeout(() => document.querySelectorAll('.orb').forEach(o => o.classList.remove('scrolling')), 180); }, { passive: true });
 window.BW = BW;
