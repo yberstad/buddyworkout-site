@@ -125,5 +125,5 @@ a{color:var(--g);text-decoration:none}a:hover{color:#6EE7B7}
 @media (max-width:1100px){.chap{grid-template-columns:42% minmax(0,1fr)}.chap .ph{grid-column:2}.chap .copy{grid-row:1}}
 .mOrb{display:none}
 @media (max-width:820px){.chap{grid-template-columns:1fr;padding:10svh 24px 6svh;gap:28px;min-height:auto}.chap .copy,.chap .ph{grid-column:1}.chap .copy{text-align:center;align-items:center}.chap .ph{justify-content:center;gap:12px}.chap .ph .phone:nth-child(2){margin-top:8svh}.mOrb{display:block;position:relative;height:210px;grid-column:1}}
-@media (max-width:520px){.nav .brand>span:last-child{display:none}.nav{gap:8px;padding:0 14px}.nav .seg button,.nav .seg a{padding:7px 8px}.nav .get{padding:8px 11px}}
+@media (max-width:520px){.nav{gap:8px;padding:0 14px}}
 @media (max-width:820px){.phone{--w:min(42vw,210px)}.chap .ph .phone:nth-child(2){--w:min(36vw,180px)}}
