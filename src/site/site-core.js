@@ -15,8 +15,16 @@ const BW = {
   lerp: (a, b, t) => a + (b - a) * t,
   ease: t => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
   range(p, a, b) { return BW.clamp((p - a) / (b - a)); },
-  // Height of the small viewport (100svh). Constant while the iOS address bar collapses, so sticky stage and orb layout do not jump.
-  vh() { const e = document.getElementById('svh'); return (e && e.offsetHeight) || innerHeight; },
+  // Stable viewport height, in px, also published as --vh (1% of it). In-app browsers (Messenger, Instagram) and iOS Safari
+  // resize the viewport whenever the toolbar shows or hides, which made the sticky stage and orb jump when scrolling
+  // changed direction. So height-only changes are ignored unless the viewport got smaller; a width change (rotation) resets it.
+  vh() {
+    const w = innerWidth, h = innerHeight;
+    if (w !== BW._w || !BW._h) { BW._w = w; BW._h = h; } else if (h < BW._h) BW._h = h;
+    const css = BW._h / 100 + 'px';
+    if (BW._css !== css) { BW._css = css; document.documentElement.style.setProperty('--vh', css); }
+    return BW._h;
+  },
   prog(el) { const r = el.getBoundingClientRect(); return BW.clamp(-r.top / (r.height - BW.vh())); },
   balls(d) { const t = document.createElement('template'); t.innerHTML = ballsHtml(d); return t.content.firstElementChild; },
   phone(imgs, w) {
@@ -106,4 +114,5 @@ const BW = {
   },
 };
 let __st; addEventListener('scroll', () => { document.querySelectorAll('.orb').forEach(o => o.classList.add('scrolling')); clearTimeout(__st); __st = setTimeout(() => document.querySelectorAll('.orb').forEach(o => o.classList.remove('scrolling')), 180); }, { passive: true });
+BW.vh();
 window.BW = BW;

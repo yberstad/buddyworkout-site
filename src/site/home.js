@@ -56,5 +56,6 @@ function frame() {
   orb.state(BW.orbState(k, f));
   orb.el.querySelector('.peek').style.opacity = orb.el.querySelector('.peek').dataset.has === '1' || m < .9 ? '' : 0;
 }
-addEventListener('resize', layout); addEventListener('scroll', () => requestAnimationFrame(frame), { passive: true });
+let lastW = 0, lastH = 0;
+addEventListener('resize', () => { const h = BW.vh(); if (innerWidth !== lastW || h !== lastH) { lastW = innerWidth; lastH = h; layout(); } }); addEventListener('scroll', () => requestAnimationFrame(frame), { passive: true });
 layout();
