@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="{{htmlLang}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{title}}</title>
+<meta name="description" content="{{description}}">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="canonical" href="{{canonical}}">
+{{alternates}}
+{{preview}}
+<link rel="preload" href="{{up}}fonts/inter-tight-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{up}}site/site.css">
+<script src="{{up}}site/theme.js"></script>
+</head>
+<body id="top" data-ios="{{ios}}" data-android="{{android}}">
+<a class="skip" href="#chapters">{{skip}}</a>
+<div id="svh" aria-hidden="true" style="position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none"></div>
+{{nav}}
+<div class="orbLayer" aria-hidden="true"></div>
+<section id="intro"><div class="stage">
+<div class="heroTxt"><p class="kick" data-c="#34D399">{{hero.kick}}</p><h1 class="h1">{{hero.title}}</h1><p class="lead">{{hero.sub}}</p><div id="heroStores">{{heroStores}}</div></div>
+<div class="timerTxt"><p class="kick" data-c="#34D399" style="color:var(--g)">{{timer.kick}}</p><h2 class="h2">{{timer.title}}</h2><p class="lead">{{timer.body}}</p></div>
+</div></section>
+<main id="chapters">{{chapters}}</main>
+{{end}}
+{{foot}}
+<script type="module" src="{{up}}site/home.js"></script>
+</body>
+</html>

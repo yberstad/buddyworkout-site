@@ -62,7 +62,21 @@ describe('pages', () => {
   });
 
   it('hides store badges until the store URLs exist', () => {
-    assert.ok(!read('index.html').includes('class="button"'));
+    assert.ok(!read('index.html').includes('class="stores"'));
+  });
+
+  it('prerenders the home page copy per language, with title, theme colour and footer links', () => {
+    const en = read('index.html');
+    const nb = read('no/index.html');
+    assert.match(en, /<title>BuddyWorkout: Interval timer for running and climbing<\/title>/);
+    assert.match(nb, /<title>BuddyWorkout: Intervalltimer for løping og klatring<\/title>/);
+    assert.match(en, /<h1 class="h1">Intervals, together\.<\/h1>/);
+    assert.match(nb, /<h1 class="h1">Intervaller, sammen\.<\/h1>/);
+    assert.match(nb, /<meta name="theme-color" content="#FFFFFF">/);
+    assert.match(en, /href="privacy">Privacy policy/);
+    assert.match(nb, /href="personvern">Personvern/);
+    assert.match(en, /Apple and the App Store are trademarks of Apple Inc\./);
+    assert.match(nb, /Google Play og Google Play-logoen er varemerker for Google LLC\./);
   });
 });
 
@@ -88,10 +102,14 @@ describe('links and requests', () => {
     }
   });
 
-  it('makes no external requests (only mailto and plain links, no scripts, no remote assets)', () => {
+  it('makes no external requests (only mailto and plain links, no third-party scripts, no remote assets)', () => {
     for (const p of [...pages, 'style.css']) {
       const text = read(p);
-      assert.ok(!/<script/i.test(text), `${p} has a script`);
+      // Only the animated home pages run scripts, and only same-origin files.
+      const scripts = text.match(/<script[^>]*>/gi) ?? [];
+      const isHome = p === 'index.html' || p === 'no/index.html';
+      assert.ok(isHome || scripts.length === 0, `${p} has a script`);
+      for (const tag of scripts) assert.match(tag, /^<script (type="module" )?src="(\.\.\/)?site\/[\w-]+\.js">$/, `${p}: ${tag}`);
       assert.ok(!/<iframe|<img[^>]+src="https?:|url\(\s*['"]?https?:|@import/i.test(text), `${p} loads a remote resource`);
       for (const tag of text.match(/<link [^>]*>/g) ?? []) {
         if (/rel="(stylesheet|icon|preload)"/.test(tag)) assert.ok(!/href="https?:/.test(tag), `${p}: ${tag}`);
@@ -109,8 +127,9 @@ describe('links and requests', () => {
   it('sets aria-current on the active nav link and has a skip link and one h1', () => {
     for (const p of pages) {
       const html = read(p);
-      assert.equal((html.match(/aria-current="page"/g) ?? []).length, 1, p);
-      assert.match(html, /class="skip" href="#content"/, p);
+      const home = p === 'index.html' || p === 'no/index.html';
+      if (!home) assert.equal((html.match(/aria-current="page"/g) ?? []).length, 1, p);
+      assert.match(html, home ? /class="skip" href="#chapters"/ : /class="skip" href="#content"/, p);
       assert.equal((html.match(/<h1[ >]/g) ?? []).length, 1, p);
     }
   });

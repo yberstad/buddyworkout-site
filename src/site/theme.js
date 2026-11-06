@@ -1,0 +1,1 @@
+try{var t=localStorage.getItem('bw-site-theme');if(t==='dark'||t==='light')document.documentElement.dataset.theme=t;else document.documentElement.dataset.theme='light'}catch(e){document.documentElement.dataset.theme='light'}

@@ -5,6 +5,8 @@ import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, write
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { files, pages, sharePage, storeText, ui } from './content.mjs';
+import { CH, T } from './src/site/copy.js';
+import { chapterHtml, endHtml, footHtml, navHtml, storesHtml } from './src/site/render.js';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const langs = ['en', 'nb'];
@@ -106,6 +108,37 @@ export function loadConfig() {
   return { ...config, siteUrl };
 }
 
+/** The animated home page: markup and copy are prerendered per language; src/site/home.js only adds the motion. */
+function renderHome(config, lang) {
+  const t = ui[lang];
+  const k = lang === 'en' ? 'en' : 'no';
+  const up = lang === 'en' ? '' : '../';
+  const copy = T[k];
+  const links = { ios: config.storeLinks.appStore, android: config.storeLinks.googlePlay };
+  const stores = storesHtml(k, links, `${up}site/badges/`);
+  const alt = (l) => `<link rel="alternate" hreflang="${ui[l].htmlLang}" href="${urlOf(config.siteUrl, l, 'home')}">`;
+  const values = {
+    htmlLang: t.htmlLang,
+    title: escapeHtml(copy['meta.title']),
+    description: escapeHtml(copy['meta.desc']),
+    canonical: urlOf(config.siteUrl, lang, 'home'),
+    alternates: `${alt('en')}\n${alt('nb')}\n<link rel="alternate" hreflang="x-default" href="${urlOf(config.siteUrl, 'en', 'home')}">`,
+    preview: previewTags(config, copy['meta.title'], copy['meta.desc'], up),
+    up,
+    ios: escapeHtml(links.ios),
+    android: escapeHtml(links.android),
+    skip: copy['a11y.skip'],
+    nav: navHtml(k, { noHref: lang === 'en' ? 'no/' : './', enHref: lang === 'en' ? './' : '../' }),
+    heroStores: stores,
+    chapters: CH.map((c) => chapterHtml(c, k)).join('\n'),
+    end: endHtml(k, stores),
+    foot: footHtml(k, { privacyHref: nameOf(lang, 'privacy'), supportHref: nameOf(lang, 'support') }),
+    'hero.kick': copy['hero.kick'], 'hero.title': copy['hero.title'], 'hero.sub': copy['hero.sub'],
+    'timer.kick': copy['timer.kick'], 'timer.title': copy['timer.title'], 'timer.body': copy['timer.body'],
+  };
+  return readFileSync(join(root, 'src', 'home.html'), 'utf8').replace(/\{\{([\w.]+)\}\}/g, (_, key) => values[key]);
+}
+
 function renderPage(config, lang, slug) {
   const t = ui[lang];
   const other = lang === 'en' ? 'nb' : 'en';
@@ -167,6 +200,7 @@ export function build({ production = false } = {}) {
 
   cpSync(join(root, 'src', 'style.css'), join(dist, 'style.css'));
   cpSync(join(root, 'src', 'fonts'), join(dist, 'fonts'), { recursive: true });
+  cpSync(join(root, 'src', 'site'), join(dist, 'site'), { recursive: true });
   cpSync(join(root, 'src', 'favicon.png'), join(dist, 'favicon.png'));
   // The full app icon, for link previews and the home-screen icon.
   cpSync(join(root, 'src', 'apple-touch-icon.png'), join(dist, 'apple-touch-icon.png'));
@@ -174,7 +208,7 @@ export function build({ production = false } = {}) {
   const urls = [];
   for (const lang of langs) {
     for (const slug of slugs) {
-      writeFileSync(join(dist, pathOf(lang, slug)), renderPage(config, lang, slug));
+      writeFileSync(join(dist, pathOf(lang, slug)), slug === 'home' ? renderHome(config, lang) : renderPage(config, lang, slug));
       urls.push(urlOf(config.siteUrl, lang, slug));
     }
   }
