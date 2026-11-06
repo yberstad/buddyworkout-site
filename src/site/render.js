@@ -10,13 +10,12 @@ export function ballsHtml(d) {
   return `<span class="balls" aria-hidden="true" style="width:${d * 1.72}px;height:${d}px"><span class="ball r" style="width:${d}px;height:${d}px;left:${d * 0.72}px;top:0;-webkit-mask-image:${m};mask-image:${m}"></span><span class="ball g" style="width:${d}px;height:${d}px;left:0;top:0"></span></span>`;
 }
 
-/** Header: brand, theme switch, language links (NO/EN are the two prerendered pages), download button. */
+/** Header: brand and language links (NO/EN are the two prerendered pages). */
 export function navHtml(lang, { noHref, enHref }) {
   const t = T[lang];
   const on = (l) => (l === lang ? ' class="on" aria-current="true"' : '');
   return `<header class="nav"><a class="brand" href="#top" aria-label="BuddyWorkout">${ballsHtml(18)}<span>BuddyWorkout</span></a>
-<nav class="seg" aria-label="${t['a11y.lang']}"><a href="${noHref}" lang="nb" hreflang="nb"${on('no')}>NO</a><a href="${enHref}" lang="en" hreflang="en"${on('en')}>EN</a></nav>
-<a class="get" href="#download">${t.get}</a></header>`;
+<nav class="seg" aria-label="${t['a11y.lang']}"><a href="${noHref}" lang="nb" hreflang="nb"${on('no')}>NO</a><a href="${enHref}" lang="en" hreflang="en"${on('en')}>EN</a></nav></header>`;
 }
 
 /**

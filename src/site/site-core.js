@@ -19,14 +19,6 @@ const BW = {
   vh() { const e = document.getElementById('svh'); return (e && e.offsetHeight) || innerHeight; },
   prog(el) { const r = el.getBoundingClientRect(); return BW.clamp(-r.top / (r.height - BW.vh())); },
   balls(d) { const t = document.createElement('template'); t.innerHTML = ballsHtml(d); return t.content.firstElementChild; },
-  LINKS: { ios: document.body.dataset.ios || '', android: document.body.dataset.android || '' },
-  /** Wire the prerendered nav: on a phone the "Last ned" button goes to that device's store. */
-  initNav() {
-    const get = document.querySelector('.nav .get'), ua = navigator.userAgent;
-    const ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const store = ios ? BW.LINKS.ios : /Android/.test(ua) ? BW.LINKS.android : '';
-    if (get && store) get.href = store;
-  },
   phone(imgs, w) {
     const p = document.createElement('div'); p.className = 'phone'; if (w) p.style.setProperty('--w', w + 'px');
     p.innerHTML = `<div class="scr">${imgs.map((s, i) => `<picture><source type="image/webp" srcset="${IMG}${s.replace('.png', '.webp')}"><img src="${IMG}${s}" alt="" width="900" height="1951" class="${i ? '' : 'on'}" loading="${i ? 'lazy' : 'eager'}" decoding="async"></picture>`).join('')}</div>`;

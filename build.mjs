@@ -125,8 +125,6 @@ function renderHome(config, lang) {
     alternates: `${alt('en')}\n${alt('nb')}\n<link rel="alternate" hreflang="x-default" href="${urlOf(config.siteUrl, 'en', 'home')}">`,
     preview: previewTags(config, copy['meta.title'], copy['meta.desc'], up),
     up,
-    ios: escapeHtml(links.ios),
-    android: escapeHtml(links.android),
     skip: copy['a11y.skip'],
     nav: navHtml(k, { noHref: lang === 'en' ? 'no/' : './', enHref: lang === 'en' ? './' : '../' }),
     heroStores: stores,

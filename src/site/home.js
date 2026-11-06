@@ -1,6 +1,5 @@
 import './site-core.js';
 const BW = window.BW;
-BW.initNav();
 const orb = BW.orb(); document.querySelector('.orbLayer').append(orb.el);
 const intro = document.getElementById('intro'), heroTxt = document.querySelector('.heroTxt'), timerTxt = document.querySelector('.timerTxt');
 const main = document.getElementById('chapters');

@@ -45,8 +45,7 @@ The example buddy names in the orb are in `site-core.js` (`orbState`, case `budd
 ## Config
 
 Everything the owner may change is in `site.config.json`: `siteUrl`, owner details, "last updated" date, store links
-and the app IDs for share links. A store badge stays hidden while its `storeLinks` URL is empty. On a phone, the nav
-"Last ned" button goes to that device's store. `SITE_URL=... npm run build`
+and the app IDs for share links. A store badge stays hidden while its `storeLinks` URL is empty. `SITE_URL=... npm run build`
 overrides `siteUrl` for one build. All internal page links are relative.
 
 When you change the text of the privacy policy, update `updated` in `site.config.json`.
